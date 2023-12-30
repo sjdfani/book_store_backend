@@ -30,3 +30,14 @@ class Register(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.UserSerializer
     queryset = get_user_model().objects.all()
+
+
+class ChangePassword(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        serializer = serializers.ChangePasswordSerializer(
+            data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.change_password()
+        return Response(serializer.data, status=status.HTTP_200_OK)

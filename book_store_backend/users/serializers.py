@@ -43,3 +43,24 @@ class RegisterSerializer(serializers.Serializer):
         self.validated_data.pop("password")
         password = self.validated_data.pop("confirm_password")
         return self.create(self.validated_data, password)
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        if not user.check_password(attrs["current_password"]):
+            raise ValidationError({"message": "Your password is incorrect."})
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise ValidationError(
+                {"message": "The input passwords are not match."})
+        return attrs
+
+    def change_password(self):
+        user = self.context["request"].user
+        new_password = self.validated_data["new_password"]
+        user.set_password(new_password)
+        user.save()
