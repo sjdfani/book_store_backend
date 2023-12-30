@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
-from django.contrib.auth import get_user_model
+from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
+        model = CustomUser
         exclude = ("password",)
 
 
@@ -14,7 +14,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate_username(self, value):
-        if not get_user_model().objects.filter(username=value).exists():
+        if not CustomUser.objects.filter(username=value).exists():
             raise serializers.ValidationError("This username is not exists.")
         return value
 
@@ -26,7 +26,7 @@ class RegisterSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        if get_user_model().objects.filter(username=attrs["username"]).exists():
+        if CustomUser.objects.filter(username=attrs["username"]).exists():
             raise ValidationError({"message": "This username is exists."})
         if attrs["password"] != attrs["confirm_password"]:
             raise ValidationError(
@@ -34,7 +34,7 @@ class RegisterSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data, password):
-        user = get_user_model().objects.create(**validated_data)
+        user = CustomUser.objects.create(**validated_data)
         user.set_password(password)
         user.save()
         return user

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from rest_framework import permissions
-from django.contrib.auth import get_user_model
+from .models import CustomUser
 import serializers
 from .utils import get_tokens_for_user
 
@@ -14,7 +14,7 @@ class Login(APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data["username"]
         password = serializer.validated_data["password"]
-        user = get_user_model().objects.get(username=username)
+        user = CustomUser.objects.get(username=username)
         if user.check_password(password):
             user.update_last_login()
             message = {
@@ -29,7 +29,7 @@ class Login(APIView):
 class Register(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.UserSerializer
-    queryset = get_user_model().objects.all()
+    queryset = CustomUser.objects.all()
 
 
 class ChangePassword(APIView):
