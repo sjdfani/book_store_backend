@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics
+from rest_framework import permissions
 from django.contrib.auth import get_user_model
 import serializers
 from .utils import get_tokens_for_user
@@ -22,3 +24,9 @@ class Login(APIView):
             return Response(message, status=status.HTTP_200_OK)
         message = {"message": "email or password is incorrect."}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Register(generics.CreateAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = serializers.UserSerializer
+    queryset = get_user_model().objects.all()
