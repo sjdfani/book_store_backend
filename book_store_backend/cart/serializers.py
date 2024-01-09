@@ -1,11 +1,22 @@
 from rest_framework import serializers
+from rest_framework.validators import ValidationError
 from books.models import Book
+from books.serializers import BookSerializer
 from .models import Cart, PurchaseItem
+from .utils import str_generator
 
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
+        fields = "__all__"
+
+
+class PurchaseItemSerializer(serializers.ModelSerializer):
+    book = BookSerializer(many=True)
+
+    class Meta:
+        model = PurchaseItem
         fields = "__all__"
 
 
@@ -38,3 +49,20 @@ class ChangeCountOfPurchaseItemSerializer(serializers.Serializer):
         obj = self.validated_data["purchase_item"]
         obj.count = self.validated_data["count"]
         obj.save()
+
+
+class PaymentSerializer(serializers.Serializer):
+
+    def validate(self, attrs):
+        cart = Cart.objects.filter(user=self.context["request"].user)
+        if cart.exists():
+            if len(cart.purchase_items.all()) == 0:
+                raise ValidationError({"message": "Your cart is empty"})
+            raise ValidationError({"message": "You don't have open cart"})
+        return attrs
+
+    def payment_process(self, **kwargs):
+        user = self.context["request"].user
+        transaction_id = str_generator(15, True)
+        cart = Cart.objects.get(user=user)
+        cart.complete_payment(transaction_id)

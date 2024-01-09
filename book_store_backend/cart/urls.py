@@ -8,5 +8,8 @@ urlpatterns = [
     path("purchase_item/create/", views.AddPurchaseItem.as_view(),
          name="AddPurchaseItem"),
     path("change-count/", views.ChangeCountOfPurchaseItem.as_view(),
-         name="ChangeCountOfPurchaseItem")
+         name="ChangeCountOfPurchaseItem"),
+    path("payment/", views.Payment.as_view(), name="Payment"),
+    path("purchase_item/list/<bool:status>/",
+         views.PurchaseItemList.as_view(), name="PurchaseItemList"),
 ]

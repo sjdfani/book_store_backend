@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import Cart, PurchaseItem
 from .serializers import (
     CartSerializer, CreatePurchaseItemSerializer, ChangeCountOfPurchaseItemSerializer,
+    PaymentSerializer, PurchaseItemSerializer,
 )
 
 
@@ -39,3 +40,29 @@ class ChangeCountOfPurchaseItem(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class Payment(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        serializer = PaymentSerializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.payment_process()
+        return Response(status=status.HTTP_200_OK)
+
+
+class PurchaseItemList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PurchaseItemSerializer
+
+    def get_queryset(self):
+        status_ = self.kwargs.get("status")
+        if status_ in (True, False):
+            return PurchaseItem.objects.filter(
+                user=self.request.user,
+                status=status_,
+            )
+        return PurchaseItem.objects.none()
