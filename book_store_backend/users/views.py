@@ -6,6 +6,7 @@ from rest_framework import permissions
 from .models import CustomUser
 from . import serializers
 from .utils import get_tokens_for_user
+from .permissions import IsSuperuser
 
 
 class Login(APIView):
@@ -41,3 +42,15 @@ class ChangePassword(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.change_password()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserList(generics.ListAPIView):
+    permission_classes = (IsSuperuser,)
+    serializer_class = serializers.UserSerializer
+    queryset = CustomUser.objects.all()
+
+
+class RetrieveUpdateDestroyUser(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsSuperuser,)
+    serializer_class = serializers.UserSerializer
+    queryset = CustomUser.objects.all()
