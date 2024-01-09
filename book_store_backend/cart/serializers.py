@@ -26,3 +26,15 @@ class CreatePurchaseItemSerializer(serializers.Serializer):
     def save(self, **kwargs):
         user = self.context["request"].user
         self.create(self.validated_data, user)
+
+
+class ChangeCountOfPurchaseItemSerializer(serializers.Serializer):
+    purchase_item = serializers.PrimaryKeyRelatedField(
+        queryset=PurchaseItem.objects.all()
+    )
+    count = serializers.IntegerField()
+
+    def save(self, **kwargs):
+        obj = self.validated_data["purchase_item"]
+        obj.count = self.validated_data["count"]
+        obj.save()

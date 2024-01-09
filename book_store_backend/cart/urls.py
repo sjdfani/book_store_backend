@@ -7,4 +7,6 @@ urlpatterns = [
     path("list/", views.GetCart.as_view(), name="GetCart"),
     path("purchase_item/create/", views.AddPurchaseItem.as_view(),
          name="AddPurchaseItem"),
+    path("change-count/", views.ChangeCountOfPurchaseItem.as_view(),
+         name="ChangeCountOfPurchaseItem")
 ]
