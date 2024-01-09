@@ -3,7 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsSuperuser
 from .models import Book, SaveItem
 from .serializers import (
-    BookSerializer, SaveItemSerializer,
+    BookSerializer, SaveItemSerializer, CreateSaveItemSerializer,
+    DestroySaveItemSerializer,
 )
 
 
@@ -39,13 +40,13 @@ class RetrieveUpdateDestroyAllBook(generics.RetrieveUpdateDestroyAPIView):
 
 class CreateSaveItem(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = SaveItemSerializer
+    serializer_class = CreateSaveItemSerializer
     queryset = SaveItem.objects.all()
 
 
 class DestroySaveItem(generics.DestroyAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = SaveItemSerializer
+    serializer_class = DestroySaveItemSerializer
 
     def get_queryset(self):
         return SaveItem.objects.filter(user=self.request.user)

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Book, SaveItem
+from users.models import CustomUser
+from rest_framework.validators import ValidationError
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -14,3 +16,38 @@ class SaveItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SaveItem
         fields = "__all__"
+
+
+class CreateSaveItemSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all()
+    )
+    book = serializers.PrimaryKeyRelatedField(
+        queryset=Book.objects.all()
+    )
+
+    def validate(self, attrs):
+        if SaveItem.objects.filter(user=attrs["user"], book=attrs["book"]).exists():
+            raise ValidationError({"message": "You saved this book before"})
+        return attrs
+
+    def create(self, validated_data):
+        return SaveItem.objects.create(
+            user=validated_data["user"],
+            book=validated_data["book"],
+        )
+
+
+class DestroySaveItemSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all()
+    )
+    book = serializers.PrimaryKeyRelatedField(
+        queryset=Book.objects.all()
+    )
+
+    def validate(self, attrs):
+        if not SaveItem.objects.filter(user=attrs["user"], book=attrs["book"]).exists():
+            raise ValidationError(
+                {"message": "You didn't save this book before"})
+        return attrs
