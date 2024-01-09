@@ -29,6 +29,7 @@ class PurchaseItem(models.Model):
         return self.user
 
     def bought_done(self, transaction_id: str):
+        self.price_of_one_book = self.book.price
         self.date_of_payment = timezone.now()
         self.status = False
         self.transaction_id = transaction_id
