@@ -8,13 +8,12 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    readonly_fields = ("created_at", "updated_at")
     list_display = (
-        "username", "is_staff", "is_active", "is_superuser")
+        "email", "is_staff", "is_active", "is_superuser")
     list_filter = ("is_staff", "is_active", "is_superuser")
     fieldsets = (
         ('Personal Information', {
-         "fields": ("username", "fullname", "profile", "password")}),
+         "fields": ("email", "fullname", "profile", "password")}),
         ("Permissions", {"fields": (
             "is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         ("Date and Time", {
@@ -23,12 +22,12 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         ('Personal Information', {
             "classes": ("wide",),
-            "fields": ("username", "fullname", "profile", "password1", "password2")}),
+            "fields": ("email", "fullname", "profile", "password1", "password2")}),
         ("Permissions", {"fields": (
             "is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
     )
-    search_fields = ("username",)
-    ordering = ("username",)
+    search_fields = ("email",)
+    ordering = ("email",)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
