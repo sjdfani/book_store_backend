@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework import permissions
 from .models import CustomUser
-import serializers
+from . import serializers
 from .utils import get_tokens_for_user
 
 
