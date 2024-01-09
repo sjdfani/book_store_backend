@@ -30,7 +30,7 @@ class PurchaseItem(models.Model):
 
     def bought_done(self, transaction_id: str):
         self.date_of_payment = timezone.now()
-        self.is_available = False
+        self.status = False
         self.transaction_id = transaction_id
         self.save()
 
@@ -53,4 +53,12 @@ class Cart(models.Model):
         for item in self.purchase_items.all():
             item.bought_done(transaction_id)
         self.purchase_items.clear()
+        self.save()
+
+    def add_purchase_item(self, obj):
+        self.purchase_items.add(obj)
+        self.save()
+
+    def remove_purchase_item(self, obj):
+        self.purchase_items.remove(obj)
         self.save()
