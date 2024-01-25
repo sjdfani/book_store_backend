@@ -50,6 +50,15 @@ class UserList(generics.ListAPIView):
     queryset = CustomUser.objects.all()
 
 
+class RetrieveUser(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.UserSerializer
+    queryset = CustomUser.objects.all()
+
+    def get_queryset(self):
+        return CustomUser.objects.filter(email=self.request.email)
+
+
 class RetrieveUpdateDestroyUser(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsSuperuser,)
     serializer_class = serializers.UserSerializer

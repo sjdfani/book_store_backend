@@ -10,4 +10,5 @@ urlpatterns = [
     path("list/", views.UserList.as_view(), name="UserList"),
     path("list/<int:pk>/", views.RetrieveUpdateDestroyUser.as_view(),
          name="RetrieveUpdateDestroyUser"),
+    path("retrieve/<int:pk>/", views.RetrieveUser.as_view(), name="RetrieveUser"),
 ]
