@@ -10,6 +10,6 @@ urlpatterns = [
     path("change-count/", views.ChangeCountOfPurchaseItem.as_view(),
          name="ChangeCountOfPurchaseItem"),
     path("payment/", views.Payment.as_view(), name="Payment"),
-    path("purchase_item/list/<bool:status>/",
+    path("purchase_item/list/<str:status>/",
          views.PurchaseItemList.as_view(), name="PurchaseItemList"),
 ]

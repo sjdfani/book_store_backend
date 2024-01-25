@@ -60,7 +60,8 @@ class PurchaseItemList(generics.ListAPIView):
 
     def get_queryset(self):
         status_ = self.kwargs.get("status")
-        if status_ in (True, False):
+        if status_ in ("True", "False"):
+            status_ = True if status_ == "True" else False
             return PurchaseItem.objects.filter(
                 user=self.request.user,
                 status=status_,
