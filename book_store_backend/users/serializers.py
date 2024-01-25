@@ -10,24 +10,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-    def validate_username(self, value):
-        if not CustomUser.objects.filter(username=value).exists():
-            raise serializers.ValidationError("This username is not exists.")
+    def validate_email(self, value):
+        if not CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is not exists.")
         return value
 
 
 class RegisterSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.CharField()
     fullname = serializers.CharField()
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        if CustomUser.objects.filter(username=attrs["username"]).exists():
-            raise ValidationError({"message": "This username is exists."})
+        if CustomUser.objects.filter(email=attrs["email"]).exists():
+            raise ValidationError({"message": "This email is exists."})
         if attrs["password"] != attrs["confirm_password"]:
             raise ValidationError(
                 {"message": "Your input passwords are not match"})

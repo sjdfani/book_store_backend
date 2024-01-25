@@ -13,9 +13,9 @@ class Login(APIView):
     def post(self, request):
         serializer = serializers.LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data["username"]
+        email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
-        user = CustomUser.objects.get(username=username)
+        user = CustomUser.objects.get(email=email)
         if user.check_password(password):
             user.update_last_login()
             message = {
@@ -24,7 +24,7 @@ class Login(APIView):
             }
             return Response(message, status=status.HTTP_200_OK)
         message = {"message": "email or password is incorrect."}
-        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+        return Response(message, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class Register(generics.CreateAPIView):

@@ -17,7 +17,7 @@ class CustomUserAdmin(UserAdmin):
         ("Permissions", {"fields": (
             "is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         ("Date and Time", {
-         "fields": ("last_login", "created_at", "updated_at")}),
+         "fields": ("last_login",)}),
     )
     add_fieldsets = (
         ('Personal Information', {
