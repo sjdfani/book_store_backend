@@ -1,5 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .permissions import IsSuperuser
 from .models import Book, SaveItem
 from .serializers import (
@@ -9,7 +12,6 @@ from .serializers import (
 
 
 class BookList(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
     serializer_class = BookSerializer
     queryset = Book.objects.filter(publish=True)
 
@@ -58,3 +60,30 @@ class SaveItemList(generics.ListAPIView):
 
     def get_queryset(self):
         return SaveItem.objects.filter(user=self.request.user)
+
+
+class PopularList(generics.ListAPIView):
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        state = self.kwargs.get("state", None)
+        if state == 0:
+            return Book.objects.filter(publish=True).order_by("-rating")[:5]
+        elif state == 1:
+            return Book.objects.filter(publish=True).order_by("-rating")
+        else:
+            return Book.objects.none()
+
+
+class NewestList(generics.ListAPIView):
+    serializer_class = BookSerializer
+    queryset = Book.objects.filter(publish=True).order_by("-pk")[:2]
+
+    def get_queryset(self):
+        state = self.kwargs.get("state", None)
+        if state == 0:
+            return Book.objects.filter(publish=True).order_by("-pk")[:2]
+        elif state == 1:
+            return Book.objects.filter(publish=True).order_by("-pk")
+        else:
+            return Book.objects.none()

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     BookList, RetrieveBook, CreateBook, AllBookList, RetrieveUpdateDestroyAllBook,
-    CreateSaveItem, DestroySaveItem, SaveItemList,
+    CreateSaveItem, DestroySaveItem, SaveItemList, PopularList, NewestList,
 )
 
 app_name = "books"
@@ -16,4 +16,6 @@ urlpatterns = [
     path("saveItem/create/", CreateSaveItem.as_view(), name="CreateSaveItem"),
     path("saveItem/remove/", DestroySaveItem.as_view(), name="DestroySaveItem"),
     path("saveItem/list/", SaveItemList.as_view(), name="SaveItemList"),
+    path("popular/list/<int:state>/", PopularList.as_view(), name="PopularList"),
+    path("newest/list/<int:state>/", NewestList.as_view(), name="NewestList"),
 ]
