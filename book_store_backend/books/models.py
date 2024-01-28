@@ -19,6 +19,7 @@ class Book(models.Model):
     description = models.TextField(verbose_name=_("Description"))
     price = models.PositiveIntegerField(verbose_name=_("Price"), default=0)
     publish = models.BooleanField(verbose_name=_("Publish"), default=False)
+    image = models.ImageField(verbose_name=_("Image"), upload_to="book/")
 
     def __str__(self) -> str:
         return self.title
