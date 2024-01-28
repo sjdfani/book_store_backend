@@ -23,13 +23,13 @@ class Login(APIView):
                 "tokens": get_tokens_for_user(user)
             }
             return Response(message, status=status.HTTP_200_OK)
-        message = {"message": "email or password is incorrect."}
+        message = {"message": "Email or password is incorrect."}
         return Response(message, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class Register(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.RegisterSerializer
     queryset = CustomUser.objects.all()
 
 
@@ -50,13 +50,12 @@ class UserList(generics.ListAPIView):
     queryset = CustomUser.objects.all()
 
 
-class RetrieveUser(generics.RetrieveAPIView):
+class RetrieveUser(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.UserSerializer
-    queryset = CustomUser.objects.all()
 
     def get_queryset(self):
-        return CustomUser.objects.filter(email=self.request.email)
+        return CustomUser.objects.filter(email=self.request.user.email)
 
 
 class RetrieveUpdateDestroyUser(generics.RetrieveUpdateDestroyAPIView):
