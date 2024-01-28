@@ -15,13 +15,14 @@ class LoginSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         if not CustomUser.objects.filter(email=value).exists():
-            raise serializers.ValidationError("This email is not exists.")
+            raise ValidationError({"message": "This email is not exists."})
         return value
 
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.CharField()
     fullname = serializers.CharField()
+    profile = serializers.ImageField()
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
