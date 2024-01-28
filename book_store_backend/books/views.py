@@ -29,7 +29,7 @@ class CreateBook(generics.CreateAPIView):
 class AllBookList(generics.ListAPIView):
     permission_classes = (IsSuperuser,)
     serializer_class = BookSerializer
-    queryset = Book.objects.all()
+    queryset = Book.objects.order_by("pk")
 
 
 class RetrieveUpdateDestroyAllBook(generics.RetrieveUpdateDestroyAPIView):
