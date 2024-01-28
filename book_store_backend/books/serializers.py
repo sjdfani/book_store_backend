@@ -11,7 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class SaveItemSerializer(serializers.ModelSerializer):
-    book = BookSerializer(many=True, read_only=True)
+    book = BookSerializer(read_only=True)
 
     class Meta:
         model = SaveItem
@@ -51,3 +51,8 @@ class DestroySaveItemSerializer(serializers.Serializer):
             raise ValidationError(
                 {"message": "You didn't save this book before"})
         return attrs
+
+    def save(self, **kwargs):
+        obj = SaveItem.objects.get(
+            user=self.validated_data["user"], book=self.validated_data["book"])
+        obj.delete()

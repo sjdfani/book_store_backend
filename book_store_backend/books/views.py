@@ -48,10 +48,14 @@ class CreateSaveItem(generics.CreateAPIView):
 
 class DestroySaveItem(generics.DestroyAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = DestroySaveItemSerializer
 
-    def get_queryset(self):
-        return SaveItem.objects.filter(user=self.request.user)
+    def post(self, request):
+        serializer = DestroySaveItemSerializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SaveItemList(generics.ListAPIView):
