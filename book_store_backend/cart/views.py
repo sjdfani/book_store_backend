@@ -3,19 +3,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Cart, PurchaseItem
+from .models import PurchaseItem
 from .serializers import (
-    CartSerializer, CreatePurchaseItemSerializer, ChangeCountOfPurchaseItemSerializer,
-    PaymentSerializer, PurchaseItemSerializer,
+    CreatePurchaseItemSerializer, ChangeCountOfPurchaseItemSerializer,
+    PaymentSerializer, PurchaseItemSerializer, RemovePurchaseItemSerializer,
 )
-
-
-class GetCart(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = CartSerializer
-
-    def get_queryset(self):
-        return Cart.objects.filter(user=self.request.user)
 
 
 class AddPurchaseItem(APIView):
@@ -27,7 +19,19 @@ class AddPurchaseItem(APIView):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class RemovePurchaseItem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        serializer = RemovePurchaseItemSerializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 
 class ChangeCountOfPurchaseItem(APIView):
@@ -60,8 +64,8 @@ class PurchaseItemList(generics.ListAPIView):
 
     def get_queryset(self):
         status_ = self.kwargs.get("status")
-        if status_ in ("True", "False"):
-            status_ = True if status_ == "True" else False
+        if status_ in ("true", "false"):
+            status_ = True if status_ == "true" else False
             return PurchaseItem.objects.filter(
                 user=self.request.user,
                 status=status_,
