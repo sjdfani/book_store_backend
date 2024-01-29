@@ -1,19 +1,12 @@
 from rest_framework import serializers
-from rest_framework.validators import ValidationError
 from books.models import Book
 from books.serializers import BookSerializer
-from .models import Cart, PurchaseItem
+from .models import PurchaseItem
 from .utils import str_generator
 
 
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cart
-        fields = "__all__"
-
-
 class PurchaseItemSerializer(serializers.ModelSerializer):
-    book = BookSerializer(many=True)
+    book = BookSerializer()
 
     class Meta:
         model = PurchaseItem
@@ -27,16 +20,25 @@ class CreatePurchaseItemSerializer(serializers.Serializer):
     count = serializers.IntegerField()
 
     def create(self, validated_data, user):
-        obj = PurchaseItem.objects.create(
+        return PurchaseItem.objects.create(
+            user=user,
             book=validated_data["book"],
             count=validated_data["count"],
         )
-        cart = Cart.objects.get_or_create(user=user)[0]
-        cart.add_purchase_item(obj)
 
     def save(self, **kwargs):
         user = self.context["request"].user
         self.create(self.validated_data, user)
+
+
+class RemovePurchaseItemSerializer(serializers.Serializer):
+    purchase_item = serializers.PrimaryKeyRelatedField(
+        queryset=PurchaseItem.objects.all()
+    )
+
+    def save(self, **kwargs):
+        obj = self.validated_data["purchase_item"]
+        obj.delete()
 
 
 class ChangeCountOfPurchaseItemSerializer(serializers.Serializer):
@@ -53,16 +55,9 @@ class ChangeCountOfPurchaseItemSerializer(serializers.Serializer):
 
 class PaymentSerializer(serializers.Serializer):
 
-    def validate(self, attrs):
-        cart = Cart.objects.filter(user=self.context["request"].user)
-        if cart.exists():
-            if len(cart.purchase_items.all()) == 0:
-                raise ValidationError({"message": "Your cart is empty"})
-            raise ValidationError({"message": "You don't have open cart"})
-        return attrs
-
     def payment_process(self, **kwargs):
         user = self.context["request"].user
-        transaction_id = str_generator(15, True)
-        cart = Cart.objects.get(user=user)
-        cart.complete_payment(transaction_id)
+        transaction_id = str_generator(8, True)
+        items = PurchaseItem.objects.filter(user=user, status=True)
+        for item in items:
+            item.bought_done(transaction_id)
