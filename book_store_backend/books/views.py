@@ -1,6 +1,5 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import IsSuperuser
@@ -17,7 +16,6 @@ class BookList(generics.ListAPIView):
 
 
 class RetrieveBook(generics.RetrieveAPIView):
-    permission_classes = (IsAuthenticated,)
     serializer_class = BookSerializer
     queryset = Book.objects.filter(publish=True)
 
