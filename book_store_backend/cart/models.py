@@ -17,8 +17,8 @@ class PurchaseItem(models.Model):
     count = models.PositiveIntegerField(verbose_name=_("Count"), default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    price_of_one_book = models.FloatField(
-        verbose_name=_("Price of one Book"), default=0.0)
+    price_of_one_book = models.PositiveIntegerField(
+        verbose_name=_("Price of one Book"), default=0)
     date_of_payment = models.DateTimeField(
         verbose_name=_("Date of Payment"), null=True, blank=True)
     transaction_id = models.CharField(
@@ -26,40 +26,11 @@ class PurchaseItem(models.Model):
     status = models.BooleanField(verbose_name=_("Status"), default=True)
 
     def __str__(self) -> str:
-        return self.user
+        return self.user.email
 
     def bought_done(self, transaction_id: str):
         self.price_of_one_book = self.book.price
         self.date_of_payment = timezone.now()
         self.status = False
         self.transaction_id = transaction_id
-        self.save()
-
-
-class Cart(models.Model):
-    user = models.OneToOneField(
-        CustomUser, on_delete=models.CASCADE, verbose_name=_("User"),
-        related_name="cart_user",
-    )
-    purchase_items = models.ManyToManyField(
-        PurchaseItem, verbose_name=_("Purchase Items"),
-    )
-    updated_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return self.user
-
-    def complete_payment(self, transaction_id: str):
-        self.updated_at = timezone.now()
-        for item in self.purchase_items.all():
-            item.bought_done(transaction_id)
-        self.purchase_items.clear()
-        self.save()
-
-    def add_purchase_item(self, obj):
-        self.purchase_items.add(obj)
-        self.save()
-
-    def remove_purchase_item(self, obj):
-        self.purchase_items.remove(obj)
         self.save()
