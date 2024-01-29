@@ -13,4 +13,6 @@ urlpatterns = [
     path("payment/", views.Payment.as_view(), name="Payment"),
     path("purchase_item/list/<str:status>/",
          views.PurchaseItemList.as_view(), name="PurchaseItemList"),
+    path("purchase_item/id/",
+         views.GetIDPurchaseItemList.as_view(), name="GetIDPurchaseItemList"),
 ]

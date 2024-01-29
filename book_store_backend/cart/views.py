@@ -7,6 +7,7 @@ from .models import PurchaseItem
 from .serializers import (
     CreatePurchaseItemSerializer, ChangeCountOfPurchaseItemSerializer,
     PaymentSerializer, PurchaseItemSerializer, RemovePurchaseItemSerializer,
+    GetIDPurchaseItemSerializer,
 )
 
 
@@ -71,3 +72,11 @@ class PurchaseItemList(generics.ListAPIView):
                 status=status_,
             )
         return PurchaseItem.objects.none()
+
+
+class GetIDPurchaseItemList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = GetIDPurchaseItemSerializer
+
+    def get_queryset(self):
+        return PurchaseItem.objects.filter(user=self.request.user, status=True)

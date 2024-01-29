@@ -13,6 +13,13 @@ class PurchaseItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class GetIDPurchaseItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PurchaseItem
+        fields = ("book",)
+
+
 class CreatePurchaseItemSerializer(serializers.Serializer):
     book = serializers.PrimaryKeyRelatedField(
         queryset=Book.objects.all()
