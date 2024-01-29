@@ -6,7 +6,7 @@ from .permissions import IsSuperuser
 from .models import Book, SaveItem
 from .serializers import (
     BookSerializer, SaveItemSerializer, CreateSaveItemSerializer,
-    DestroySaveItemSerializer,
+    DestroySaveItemSerializer, GetIDSaveItemSerializer,
 )
 
 
@@ -89,3 +89,11 @@ class NewestList(generics.ListAPIView):
             return Book.objects.filter(publish=True).order_by("-pk")
         else:
             return Book.objects.none()
+
+
+class GetIDSaveItemList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = GetIDSaveItemSerializer
+
+    def get_queryset(self):
+        return SaveItem.objects.filter(user=self.request.user)

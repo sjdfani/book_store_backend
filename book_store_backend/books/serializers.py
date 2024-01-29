@@ -18,6 +18,13 @@ class SaveItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class GetIDSaveItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SaveItem
+        fields = ("book",)
+
+
 class CreateSaveItemSerializer(serializers.Serializer):
     user = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all()
