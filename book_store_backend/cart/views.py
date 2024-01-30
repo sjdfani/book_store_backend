@@ -7,7 +7,7 @@ from .models import PurchaseItem
 from .serializers import (
     CreatePurchaseItemSerializer, ChangeCountOfPurchaseItemSerializer,
     PaymentSerializer, PurchaseItemSerializer, RemovePurchaseItemSerializer,
-    GetIDPurchaseItemSerializer,
+    GetIDPurchaseItemSerializer, ConfirmPaymentSerializer,
 )
 
 
@@ -52,6 +52,18 @@ class Payment(APIView):
 
     def get(self, request):
         serializer = PaymentSerializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        price = serializer.calculate_price()
+        return Response({"total_price": price}, status=status.HTTP_200_OK)
+
+
+class ConfirmPayment(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        serializer = ConfirmPaymentSerializer(
             data=request.data, context={"request": request}
         )
         serializer.is_valid(raise_exception=True)

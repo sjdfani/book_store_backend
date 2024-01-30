@@ -3,6 +3,7 @@ from books.models import Book
 from books.serializers import BookSerializer
 from .models import PurchaseItem
 from .utils import str_generator
+from django.db.models import Sum, F
 
 
 class PurchaseItemSerializer(serializers.ModelSerializer):
@@ -61,6 +62,18 @@ class ChangeCountOfPurchaseItemSerializer(serializers.Serializer):
 
 
 class PaymentSerializer(serializers.Serializer):
+
+    def calculate_price(self, **kwargs):
+        user = self.context["request"].user
+        total_price = PurchaseItem.objects.filter(
+            user=user, status=True
+        ).aggregate(
+            total_price=Sum(F('book__price') * F('count'))
+        )['total_price']
+        return total_price
+
+
+class ConfirmPaymentSerializer(serializers.Serializer):
 
     def payment_process(self, **kwargs):
         user = self.context["request"].user
