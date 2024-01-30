@@ -13,7 +13,6 @@ media
 venv
 .venv
 env
-.env
 media_root
 export_data
 .DS_Store
